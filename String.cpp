@@ -1,10 +1,18 @@
 #include "String.h"
+#include "Exception.h"
 
-CString::CString() : m_str(nullptr) {};
+CString::CString() noexcept : m_str(nullptr)  {};
 
 CString::CString(const char* s)
 {
-    m_str = new char[strlen(s) + 1];
+    try
+    {
+        m_str = new char[strlen(s) + 1];
+    }
+    catch (std::bad_alloc)
+    {
+        throw MemoryAllocError();
+    }
     strcpy(m_str, s);
 }
 
@@ -12,7 +20,15 @@ CString::CString(const CString& other) : m_str(nullptr)
 {
     if (other.m_str != nullptr)
     {
-        m_str = new char[strlen(other.m_str) + 1];
+        try
+        {
+            m_str = new char[strlen(other.m_str) + 1];
+        }
+        catch (std::bad_alloc)
+        {
+            throw MemoryAllocError();
+        }
+        
         strcpy(m_str, other.m_str);
     }
 }
@@ -27,7 +43,14 @@ CString& CString::operator=(const CString& other)
             m_str = nullptr;
         else
         {
-            m_str = new char[strlen(other.m_str) + 1];
+            try
+            {
+                m_str = new char[strlen(other.m_str) + 1];
+            }
+            catch (std::bad_alloc)
+            {
+                throw MemoryAllocError();
+            }
             strcpy(m_str, other.m_str);
         }
     }
@@ -53,12 +76,12 @@ CString& CString::operator=(CString&& other) noexcept
     return *this;
 }
 
-CString::~CString()
+CString::~CString() noexcept
 {
     delete[] m_str;
 }
 
-char* CString::getString() const
+char* CString::getString() const noexcept
 {
     return m_str;
 }
@@ -81,10 +104,15 @@ void CString::removeChar(const char ch) const
         curIndex++;
     }
 
+    if (updIndex == curIndex)
+    {
+        throw OutOfRangeDelete();
+    }
+
     m_str[updIndex] = '\0';
 }
 
-unsigned CString::getNumberOfChar(const char ch) const
+unsigned CString::getNumberOfChar(const char ch) const noexcept
 {
     if (!m_str)
         return 0;
@@ -113,7 +141,7 @@ int reversCompareChars(const void* a, const void* b)
     return (*(char*)b - *(char*)a);
 }
 
-void CString::sotrStringInAlphabet() const
+void CString::sotrStringInAlphabet() const noexcept
 {
     if (!m_str)
         return;
@@ -121,7 +149,7 @@ void CString::sotrStringInAlphabet() const
     qsort(m_str, strlen(m_str), sizeof(char), compareChars);
 }
 
-void CString::sotrStringAntiAlphabet() const
+void CString::sotrStringAntiAlphabet() const noexcept
 {
     if (!m_str)
         return;
@@ -138,6 +166,10 @@ void CString::insertString(const CString& str, unsigned pos)
         return;
 
     size_t len1 = strlen(m_str);
+    if (pos > len1)
+    {
+        throw OutOfRangeInsert();
+    }
     size_t len2 = strlen(str.m_str);
     size_t newLen = len1 + len2;
 
@@ -243,18 +275,33 @@ char& CString::operator[](unsigned index)
     if (m_str && index < strlen(m_str))
         return m_str[index];
     else
-        throw std::out_of_range("Index out of range");
+        throw OutOfRangeException();
 }
 
 std::ostream& operator<<(std::ostream& out, const CString& PrintedOut)
 {
-    return out << PrintedOut.m_str;
+    try
+    {
+        return out << PrintedOut.m_str;
+
+    }
+    catch (std::ostream::failure)
+    {
+        throw IOError();
+    }
 }
 
 std::istream& operator>>(std::istream& in, CString& CStringIn)
 {
     char buff[1024];
-    in.getline(buff, 1024);
+    try
+    {
+        in.getline(buff, 1024);
+    }
+    catch (std::istream::failure)
+    {
+        throw IOError();
+    }
     CStringIn = CString(buff);
     return in;
 }

@@ -40,14 +40,14 @@ public:
 	IOError() : Exception("Exception: error working with istream/ostream.\n") {}
 };
 
-class EmptyListException : public Exception {
+class OutOfRangeDelete : public Exception {
 public:
-	EmptyListException() : Exception("Exception: list is empty.\n") {}
+	OutOfRangeDelete() : Exception("Exception: try to delete out of range\n") {}
 };
 
-class DifferentSizeException : public Exception {
+class OutOfRangeInsert : public Exception {
 public:
-	DifferentSizeException() : Exception("Exception: different sizes of lists.\n") {}
+	OutOfRangeInsert() : Exception("Exception: try to insert out of range\n") {}
 };
 
 class OutOfRangeException : public Exception {

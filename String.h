@@ -9,20 +9,20 @@ private:
     char* m_str;
 
 public:
-    CString();
+    CString() noexcept;
     explicit CString(const char* s);
     CString(const CString& other);
     CString(CString&& other) noexcept;
 
-    ~CString();
+    ~CString() noexcept;
 
-    char* getString() const;
+    char* getString() const noexcept;
 
-    unsigned getNumberOfChar(const char ch) const;
+    unsigned getNumberOfChar(const char ch) const noexcept;
     int findSubstring(const char* substr) const;
     void removeChar(const char ch) const;
-    void sotrStringInAlphabet() const;
-    void sotrStringAntiAlphabet() const;
+    void sotrStringInAlphabet() const noexcept;
+    void sotrStringAntiAlphabet() const noexcept;
     void insertString(const CString& str, unsigned pos);
 
     CString& operator=(const CString& other);

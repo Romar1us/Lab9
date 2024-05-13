@@ -82,6 +82,10 @@ namespace Lab9 {
 	private: System::Windows::Forms::Button^ confirm_Button;
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::TextBox^ position_TextBox;
+	private: System::Windows::Forms::Button^ charAt_Button;
+	private: System::Windows::Forms::TextBox^ at_TextBox;
+
+
 
 
 
@@ -127,6 +131,8 @@ namespace Lab9 {
 			this->confirm_Button = (gcnew System::Windows::Forms::Button());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->position_TextBox = (gcnew System::Windows::Forms::TextBox());
+			this->charAt_Button = (gcnew System::Windows::Forms::Button());
+			this->at_TextBox = (gcnew System::Windows::Forms::TextBox());
 			this->SuspendLayout();
 			// 
 			// addString_btn
@@ -366,12 +372,31 @@ namespace Lab9 {
 			this->position_TextBox->Size = System::Drawing::Size(51, 22);
 			this->position_TextBox->TabIndex = 26;
 			// 
+			// charAt_Button
+			// 
+			this->charAt_Button->Location = System::Drawing::Point(453, 291);
+			this->charAt_Button->Name = L"charAt_Button";
+			this->charAt_Button->Size = System::Drawing::Size(42, 23);
+			this->charAt_Button->TabIndex = 27;
+			this->charAt_Button->Text = L"At";
+			this->charAt_Button->UseVisualStyleBackColor = true;
+			this->charAt_Button->Click += gcnew System::EventHandler(this, &MyForm::charAt_Button_Click);
+			// 
+			// at_TextBox
+			// 
+			this->at_TextBox->Location = System::Drawing::Point(507, 292);
+			this->at_TextBox->Name = L"at_TextBox";
+			this->at_TextBox->Size = System::Drawing::Size(38, 22);
+			this->at_TextBox->TabIndex = 28;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->AutoSize = true;
 			this->ClientSize = System::Drawing::Size(882, 442);
+			this->Controls->Add(this->at_TextBox);
+			this->Controls->Add(this->charAt_Button);
 			this->Controls->Add(this->position_TextBox);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->confirm_Button);
@@ -420,5 +445,6 @@ private: System::Void insert_Button_Click(System::Object^ sender, System::EventA
 private: System::Void subString_Button_Click(System::Object^ sender, System::EventArgs^ e);
 private: System::Void addString_btn_Click(System::Object^ sender, System::EventArgs^ e);
 private: System::Void substractStrings_btn_Click(System::Object^ sender, System::EventArgs^ e);
+private: System::Void charAt_Button_Click(System::Object^ sender, System::EventArgs^ e);
 };
 }

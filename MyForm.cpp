@@ -31,7 +31,15 @@ System::Void Lab9::MyForm::deleteFrom_Button_Click(System::Object^ sender, Syste
 {
 	std::string a = marshal_as<std::string>(deleteVal_TextBox->Text);
 
-	Strings[SelectedIndex].removeChar(a[0]);
+	try
+	{
+		Strings[SelectedIndex].removeChar(a[0]);
+
+	}
+	catch (const OutOfRangeDelete& ex)
+	{
+		MessageBox::Show(gcnew String(ex.GetMessage()));
+	}
 	std::stringstream ss;
 	ss << Strings[SelectedIndex];
 	if (SelectedIndex == 0)
@@ -49,9 +57,15 @@ System::Void Lab9::MyForm::confirm_Button_Click(System::Object^ sender, System::
 	std::string value1 = marshal_as<std::string>(firstString_TextBox->Text);
 	std::string value2 = marshal_as<std::string>(secondString_TextBox->Text);
 
-
-	Strings[0] = CString(value1.c_str());
-	Strings[1] = CString(value2.c_str());
+	try
+	{
+		Strings[0] = CString(value1.c_str());
+		Strings[1] = CString(value2.c_str());
+	}
+	catch (const MemoryAllocError& ex)
+	{
+		MessageBox::Show(gcnew String(ex.GetMessage()));
+	}
 	return System::Void();
 }
 
@@ -101,7 +115,15 @@ System::Void Lab9::MyForm::insert_Button_Click(System::Object^ sender, System::E
 	int position = Convert::ToInt32(position_TextBox->Text);
 	std::string s = marshal_as<std::string>(toInsert_TextBox->Text);
 
-	Strings[SelectedIndex].insertString(CString(s.c_str()), position);
+	try
+	{
+		Strings[SelectedIndex].insertString(CString(s.c_str()), position);
+	}
+	catch (const OutOfRangeInsert& ex)
+	{
+		MessageBox::Show(gcnew String(ex.GetMessage()));
+	}
+
 	ss << Strings[SelectedIndex];
 	if (SelectedIndex == 0)
 	{
@@ -143,4 +165,17 @@ System::Void Lab9::MyForm::substractStrings_btn_Click(System::Object^ sender, Sy
 	Strings[2] = std::move(Strings[0] - Strings[1]);
 	ss << Strings[2];
 	resultLabel->Text = gcnew String(ss.str().c_str());
+}
+
+System::Void Lab9::MyForm::charAt_Button_Click(System::Object^ sender, System::EventArgs^ e)
+{
+	int index = Convert::ToInt32(at_TextBox->Text);
+	try
+	{
+		Strings[SelectedIndex][index];
+	}
+	catch (const OutOfRangeException& ex)
+	{
+		MessageBox::Show(gcnew String(ex.GetMessage()));
+	}
 }
