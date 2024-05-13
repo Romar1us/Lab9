@@ -1,0 +1,3 @@
+C:\Users\Roman\Labs\Lab9_OOP_MK\Lab9_OOP_MK\x64\Debug\Lab9_OOP_MK.vcxproj.AssemblyReference.cache
+C:\Users\Roman\Labs\Lab9_OOP_MK\Lab9_OOP_MK\x64\Debug\Lab9OOPMK.MyForm.resources
+C:\Users\Roman\Labs\Lab9_OOP_MK\Lab9_OOP_MK\x64\Debug\Lab9_OOP_MK.vcxproj.GenerateResource.cache

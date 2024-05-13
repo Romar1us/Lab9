@@ -1,0 +1,13 @@
+﻿  String.cpp
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(8,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(16,9): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(31,13): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(146,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(149,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(150,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(213,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(214,5): warning C4996: 'strcat': This function or variable may be unsafe. Consider using strcat_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(232,5): warning C4996: 'strncpy': This function or variable may be unsafe. Consider using strncpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Roman\Labs\Lab9_OOP_MK\String.cpp(233,5): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  main.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
+  Lab9_OOP_MK.vcxproj -> C:\Users\Roman\Labs\Lab9_OOP_MK\x64\Debug\Lab9_OOP_MK.exe
