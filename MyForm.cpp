@@ -170,12 +170,15 @@ System::Void Lab9::MyForm::substractStrings_btn_Click(System::Object^ sender, Sy
 System::Void Lab9::MyForm::charAt_Button_Click(System::Object^ sender, System::EventArgs^ e)
 {
 	int index = Convert::ToInt32(at_TextBox->Text);
+	char symbol[2];
 	try
 	{
-		Strings[SelectedIndex][index];
+		symbol[0] = Strings[SelectedIndex][index];
 	}
 	catch (const OutOfRangeException& ex)
 	{
 		MessageBox::Show(gcnew String(ex.GetMessage()));
 	}
+	MessageBox::Show(gcnew String(symbol));
+
 }
