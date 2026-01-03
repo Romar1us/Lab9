@@ -162,17 +162,38 @@ export class TicketService {
 
     async updateTicket(id: string, updateData: any) {
         const ticket = await TicketModel.findById(id);
-        
         if (!ticket) {
             throw new Error("Ticket not found");
         }
 
+        // 1. ПЕРЕВІРКА ВЕРСІЇ (Optimistic Locking)
+        // Якщо клієнт передав версію (__v), ми повинні перевірити, чи вона збігається з поточною в БД.
         if (updateData.__v !== undefined) {
+            // ticket.__v - це версія в базі
+            // updateData.__v - це версія, яку бачив користувач перед редагуванням
             if (ticket.__v !== updateData.__v) {
                 throw new Error("Conflict Error: Data has been modified by another user. Please refresh.");
             }
         }
 
+        // Валідація
+        if (updateData.ticket_price !== undefined) {
+            const price = Number(updateData.ticket_price);
+            if (price < 10 || price > 20000) {
+                throw new Error("Validation Error: Price must be between 10 and 20000 UAH");
+            }
+        }
+        if (updateData.passenger_details) {
+            const { first_name, last_name } = updateData.passenger_details;
+            if (first_name !== undefined && (first_name.length < 2 || first_name.length > 50)) {
+                throw new Error("Validation Error: First name length must be between 2 and 50 chars");
+            }
+            if (last_name !== undefined && (last_name.length < 2 || last_name.length > 50)) {
+                throw new Error("Validation Error: Last name length must be between 2 and 50 chars");
+            }
+        }
+
+        // Оновлення полів
         if (updateData.ticket_price) ticket.ticket_price = updateData.ticket_price;
         
         if (updateData.passenger_details) {
@@ -185,6 +206,18 @@ export class TicketService {
             ticket.seat_details = { ...ticket.seat_details, ...updateData.seat_details };
         }
 
-        return await ticket.save();
+        // Збереження
+        // Mongoose автоматично інкрементує __v після save()
+        const updatedTicket = await ticket.save();
+
+        await AuditLogModel.create({
+            action: 'UPDATE',
+            entity: 'Ticket',
+            entity_id: ticket._id,
+            changes: updateData,
+            timestamp: new Date()
+        });
+
+        return updatedTicket;
     }
 }
