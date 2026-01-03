@@ -23,27 +23,21 @@ function App() {
       setSnackbar({ open: true, message, severity });
   };
 
-  // Допоміжна функція для визначення тексту помилки
   const getErrorMessage = (error: any): string => {
-      // 1. Сервер відповів із помилкою (4xx, 5xx) - наприклад, валідація або дублікат
       if (error.response) {
           return error.response.data?.message || 'Server Error';
       } 
-      // 2. Запит відправлено, але відповіді немає (Сервер вимкнений / Timeout)
       else if (error.request) {
           return 'Network Error: Server is unavailable.';
       } 
-      // 3. Помилка при налаштуванні запиту
       else {
           return error.message || 'Unknown Error';
       }
   };
 
-  // Handlers
   const handleCreate = async (data: ITicket) => {
       try {
-          // Генеруємо номер квитка (якщо це робить бекенд, можна прибрати)
-          const payload = { ...data, ticket_number: 'TX-' + Math.floor(Math.random() * 90000 + 10000) };
+          const payload = { ...data, ticket_number: 'T' + Math.floor(Math.random() * 90000 + 10000) };
           await ticketApi.create(payload);
           showMessage('Ticket created successfully!');
           setView('list');

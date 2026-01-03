@@ -18,7 +18,8 @@ export const createTicketController = async (req: Request, res: Response) => {
         const newTicket = await ticketService.createTicket(req.body);
         res.status(201).json(newTicket);
     } catch (error: any) {
-        console.error("Error inside createTicketController:", error);
+        console.error("Error Name:", error.name);
+        console.error("Error Message:", error.message);
 
         if (error.message && error.message.includes("Validation Error")) {
             return res.status(400).json({ message: error.message });
@@ -30,15 +31,15 @@ export const createTicketController = async (req: Request, res: Response) => {
                 message: `Validation error: ${messages.join(', ')}` 
             });
         }
-
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern)[0];
             return res.status(409).json({ 
                 message: `Database error: Record with such '${field}' already exists.` 
             });
         }
-
-        if (error.name === 'MongooseServerSelectionError' || error.name === 'MongoNetworkError') {
+        if (error.name === 'MongooseServerSelectionError' || 
+            error.name === 'MongoNetworkError' || 
+            error.name === 'MongooseError') { 
             return res.status(503).json({ 
                 message: "Service temporarily unavailable. No connection to the database." 
             });
@@ -63,8 +64,6 @@ export const updateTicketController = async (req: Request, res: Response) => {
     } catch (error: any) {
         if (error.message.includes("Validation Error")) {
             res.status(400).json({ message: error.message });
-        } else if (error.name === 'CastError') {
-            res.status(400).json({ message: "Invalid ticket ID" });
         } else {
             res.status(500).json({ message: "Error updating ticket", error: error.message });
         }
