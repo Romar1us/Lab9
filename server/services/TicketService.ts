@@ -1,5 +1,6 @@
 import { TicketModel } from '../interfaces/Ticket';
 import { AuditLogModel } from '../models/AuditLog';
+import mongoose from 'mongoose';
 
 export class TicketService {
     
@@ -107,6 +108,55 @@ export class TicketService {
                 totalPages: Math.ceil(totalCount / limit)
             }
         };
+    }
+
+    async createTicket(ticketData: any) {
+        const price = Number(ticketData.ticket_price);
+        if (isNaN(price) || price < 10 || price > 20000) {
+            throw new Error("Validation Error: Price must be between 10 and 20000 UAH");
+        }
+
+        if (ticketData.passenger_details) {
+             const { first_name, last_name } = ticketData.passenger_details;
+             if (!first_name || first_name.length < 2) {
+                 throw new Error("Validation Error: Passenger first name is too short");
+             }
+             if (!last_name || last_name.length < 2) {
+                 throw new Error("Validation Error: Passenger last name is too short");
+             }
+        }
+
+        const ticketNumber = 'T' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000);
+        
+        const session = await mongoose.startSession();
+        session.startTransaction();
+
+        try {
+            const newTicket = new TicketModel({
+                ...ticketData,
+                ticket_number: ticketNumber,
+                issue_date: ticketData.issue_date || new Date().toISOString().split('T')[0]
+            });
+            
+            const savedTicket = await newTicket.save({ session });
+
+            await AuditLogModel.create([{
+                action: 'CREATE',
+                entity: 'Ticket',
+                entity_id: savedTicket._id,
+                changes: ticketData,
+                timestamp: new Date()
+            }], { session });
+
+            await session.commitTransaction();
+            return savedTicket;
+
+        } catch (error) {
+            await session.abortTransaction();
+            throw error;
+        } finally {
+            session.endSession();
+        }
     }
 
     async updateTicket(id: string, updateData: any) {

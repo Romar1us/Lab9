@@ -27,3 +27,18 @@ export const updateTicketController = async (req: Request, res: Response) => {
         }
     }
 };
+
+export const createTicketController = async (req: Request, res: Response) => {
+    try {
+        const newTicket = await ticketService.createTicket(req.body);
+        res.status(201).json(newTicket);
+    } catch (error: any) {
+        // Обробка помилок валідації
+        if (error.message && error.message.includes("Validation Error")) {
+            res.status(400).json({ message: error.message });
+        } else {
+            console.error("Transaction failed:", error);
+            res.status(500).json({ message: "Transaction failed", error: error.message });
+        }
+    }
+};

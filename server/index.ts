@@ -1,8 +1,11 @@
 import express, { Request, Response } from 'express';
 import mongoose, { Schema, Document } from 'mongoose';
 import { ITicket, TicketModel } from './interfaces/Ticket';
-import { searchTicketsController } from './controllers/TicketController';
-import { updateTicketController } from './controllers/TicketController';
+import { 
+    searchTicketsController, 
+    updateTicketController, 
+    createTicketController 
+} from './controllers/TicketController';
 import cors from 'cors';
 
 
@@ -32,15 +35,7 @@ app.get('/tickets/:id', async (req: Request, res: Response) => {
     }
   });
 
-app.post('/tickets', async (req: Request, res: Response) => {
-  try {
-    const newTicket = new TicketModel(req.body);
-    const savedTicket = await newTicket.save();
-    res.json(savedTicket);
-  } catch (error) {
-    res.status(400).json({ message: 'Error creating ticket', error });
-  }
-});
+app.post('/tickets', createTicketController);
 
 app.delete('/tickets/:id', async (req: Request, res: Response) => {
   try {
