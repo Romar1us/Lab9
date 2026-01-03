@@ -26,11 +26,17 @@ function App() {
   // Handlers
   const handleCreate = async (data: ITicket) => {
       try {
+          // Якщо бекенд генерує номер сам, цей рядок можна спростити, але залишимо для сумісності
           const payload = { ...data, ticket_number: 'TX-' + Math.floor(Math.random() * 90000 + 10000) };
           await ticketApi.create(payload);
           showMessage('Ticket created successfully!');
           setView('list');
-      } catch (e) { showMessage('Error creating ticket', 'error'); }
+      } catch (e: any) { 
+          console.error(e);
+          // ВИПРАВЛЕНО: Читаємо повідомлення про помилку з бекенду
+          const errorMsg = e.response?.data?.message || 'Error creating ticket';
+          showMessage(errorMsg, 'error'); 
+      }
   };
 
   const handleUpdate = async (data: ITicket) => {
@@ -40,7 +46,6 @@ function App() {
           showMessage('Ticket updated successfully!');
           setView('list');
       } catch (e: any) { 
-          // Відображаємо помилку з бекенду (валідація ціни, імені)
           showMessage(e.response?.data?.message || 'Update failed', 'error'); 
       }
   };

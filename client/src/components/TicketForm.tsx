@@ -1,5 +1,6 @@
+// src/components/TicketForm.tsx
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Grid as Grid, Typography, Button, Divider, InputAdornment, Paper } from '@mui/material'; // Імпортуємо Grid2 як Grid
+import { Box, TextField, Grid as Grid, Typography, Button, Divider, InputAdornment, Paper } from '@mui/material'; 
 import { Save, Person, Place, ConfirmationNumber, ArrowBack } from '@mui/icons-material';
 import type { ITicket } from '../interfaces/ITicket';
 
@@ -23,6 +24,9 @@ const defaultTicketState: ITicket = {
 
 export const TicketForm: React.FC<TicketFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting }) => {
     const [formData, setFormData] = useState<ITicket>(defaultTicketState);
+    
+    // Стейт для відображення помилок валідації (опціонально, але корисно)
+    const [errors, setErrors] = useState({ firstName: false, lastName: false, price: false });
 
     useEffect(() => {
         if (initialData) {
@@ -35,6 +39,27 @@ export const TicketForm: React.FC<TicketFormProps> = ({ initialData, onSubmit, o
             ...prev,
             [section]: { ...(prev[section] as object), [field]: value }
         }));
+        // Скидаємо помилку при вводі
+        if (section === 'passenger_details' && field === 'first_name') setErrors(e => ({...e, firstName: false}));
+        if (section === 'passenger_details' && field === 'last_name') setErrors(e => ({...e, lastName: false}));
+    };
+
+    const handleSubmit = () => {
+        // Проста фронтенд-валідація
+        const newErrors = {
+            firstName: !formData.passenger_details.first_name,
+            lastName: !formData.passenger_details.last_name,
+            price: formData.ticket_price < 0
+        };
+
+        setErrors(newErrors);
+
+        if (newErrors.firstName || newErrors.lastName || newErrors.price) {
+            // Можна додати alert або просто покладатися на червону підсвітку
+            return;
+        }
+
+        onSubmit(formData);
     };
 
     return (
@@ -46,7 +71,6 @@ export const TicketForm: React.FC<TicketFormProps> = ({ initialData, onSubmit, o
                 </Typography>
             </Box>
 
-            {/* Використовуємо container для Grid */}
             <Grid container spacing={3}>
                 {/* Passenger Details */}
                 <Grid size={{ xs: 12 }}>
@@ -55,13 +79,21 @@ export const TicketForm: React.FC<TicketFormProps> = ({ initialData, onSubmit, o
                     </Typography>
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12, sm: 4 }}>
-                            <TextField label="First Name" fullWidth size="small"
+                            <TextField 
+                                label="First Name" fullWidth size="small"
+                                required
+                                error={errors.firstName}
+                                helperText={errors.firstName ? "Required" : ""}
                                 value={formData.passenger_details.first_name}
                                 onChange={e => handleNestedChange('passenger_details', 'first_name', e.target.value)}
                             />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 4 }}>
-                             <TextField label="Last Name" fullWidth size="small"
+                             <TextField 
+                                label="Last Name" fullWidth size="small"
+                                required
+                                error={errors.lastName}
+                                helperText={errors.lastName ? "Required" : ""}
                                 value={formData.passenger_details.last_name}
                                 onChange={e => handleNestedChange('passenger_details', 'last_name', e.target.value)}
                             />
@@ -125,17 +157,24 @@ export const TicketForm: React.FC<TicketFormProps> = ({ initialData, onSubmit, o
                             />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 4 }}>
-                             <TextField label="Price" type="number" fullWidth size="small"
+                             <TextField 
+                                label="Price" type="number" fullWidth size="small"
+                                required
+                                error={errors.price}
+                                inputProps={{ min: 0 }}
                                 InputProps={{ endAdornment: <InputAdornment position="end">UAH</InputAdornment> }}
                                 value={formData.ticket_price}
-                                onChange={e => setFormData({...formData, ticket_price: Number(e.target.value)})}
+                                onChange={e => {
+                                    setFormData({...formData, ticket_price: Number(e.target.value)});
+                                    setErrors(prev => ({...prev, price: false}));
+                                }}
                             />
                         </Grid>
                      </Grid>
                  </Grid>
 
                 <Grid size={{ xs: 12 }} sx={{ display: 'flex', gap: 2, mt: 2 }}>
-                    <Button variant="contained" size="large" startIcon={<Save />} onClick={() => onSubmit(formData)} disabled={isSubmitting}>
+                    <Button variant="contained" size="large" startIcon={<Save />} onClick={handleSubmit} disabled={isSubmitting}>
                         {initialData ? 'Save Changes' : 'Issue Ticket'}
                     </Button>
                     <Button variant="outlined" size="large" onClick={onCancel}>Cancel</Button>
