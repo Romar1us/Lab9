@@ -23,19 +23,33 @@ function App() {
       setSnackbar({ open: true, message, severity });
   };
 
+  // Допоміжна функція для визначення тексту помилки
+  const getErrorMessage = (error: any): string => {
+      // 1. Сервер відповів із помилкою (4xx, 5xx) - наприклад, валідація або дублікат
+      if (error.response) {
+          return error.response.data?.message || 'Server Error';
+      } 
+      // 2. Запит відправлено, але відповіді немає (Сервер вимкнений / Timeout)
+      else if (error.request) {
+          return 'Network Error: Server is unavailable.';
+      } 
+      // 3. Помилка при налаштуванні запиту
+      else {
+          return error.message || 'Unknown Error';
+      }
+  };
+
   // Handlers
   const handleCreate = async (data: ITicket) => {
       try {
-          // Якщо бекенд генерує номер сам, цей рядок можна спростити, але залишимо для сумісності
+          // Генеруємо номер квитка (якщо це робить бекенд, можна прибрати)
           const payload = { ...data, ticket_number: 'TX-' + Math.floor(Math.random() * 90000 + 10000) };
           await ticketApi.create(payload);
           showMessage('Ticket created successfully!');
           setView('list');
       } catch (e: any) { 
           console.error(e);
-          // ВИПРАВЛЕНО: Читаємо повідомлення про помилку з бекенду
-          const errorMsg = e.response?.data?.message || 'Error creating ticket';
-          showMessage(errorMsg, 'error'); 
+          showMessage(getErrorMessage(e), 'error'); 
       }
   };
 
@@ -46,7 +60,7 @@ function App() {
           showMessage('Ticket updated successfully!');
           setView('list');
       } catch (e: any) { 
-          showMessage(e.response?.data?.message || 'Update failed', 'error'); 
+          showMessage(getErrorMessage(e), 'error'); 
       }
   };
 
@@ -96,8 +110,10 @@ function App() {
         )}
       </Container>
 
-      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar({...snackbar, open: false})}>
-        <Alert severity={snackbar.severity} variant="filled">{snackbar.message}</Alert>
+      <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={() => setSnackbar({...snackbar, open: false})}>
+        <Alert severity={snackbar.severity} variant="filled" onClose={() => setSnackbar({...snackbar, open: false})}>
+            {snackbar.message}
+        </Alert>
       </Snackbar>
     </Box>
   );

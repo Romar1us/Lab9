@@ -25,7 +25,7 @@ const defaultTicketState: ITicket = {
 export const TicketForm: React.FC<TicketFormProps> = ({ initialData, onSubmit, onCancel, isSubmitting }) => {
     const [formData, setFormData] = useState<ITicket>(defaultTicketState);
     
-    // Стейт для відображення помилок валідації (опціонально, але корисно)
+    // Стейт для відображення помилок валідації
     const [errors, setErrors] = useState({ firstName: false, lastName: false, price: false });
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export const TicketForm: React.FC<TicketFormProps> = ({ initialData, onSubmit, o
         setErrors(newErrors);
 
         if (newErrors.firstName || newErrors.lastName || newErrors.price) {
-            // Можна додати alert або просто покладатися на червону підсвітку
+            // Якщо є помилки, перериваємо відправку
             return;
         }
 
@@ -161,6 +161,8 @@ export const TicketForm: React.FC<TicketFormProps> = ({ initialData, onSubmit, o
                                 label="Price" type="number" fullWidth size="small"
                                 required
                                 error={errors.price}
+                                // ДОДАНО: Текст помилки
+                                helperText={errors.price ? "Price must be positive" : ""}
                                 inputProps={{ min: 0 }}
                                 InputProps={{ endAdornment: <InputAdornment position="end">UAH</InputAdornment> }}
                                 value={formData.ticket_price}
