@@ -1,4 +1,3 @@
-// server/controllers/TicketController.ts
 import { Request, Response } from 'express';
 import { TicketService } from '../services/TicketService';
 
@@ -18,9 +17,6 @@ export const createTicketController = async (req: Request, res: Response) => {
         const newTicket = await ticketService.createTicket(req.body);
         res.status(201).json(newTicket);
     } catch (error: any) {
-        console.error("Error Name:", error.name);
-        console.error("Error Message:", error.message);
-
         if (error.message && error.message.includes("Validation Error")) {
             return res.status(400).json({ message: error.message });
         }
@@ -31,12 +27,14 @@ export const createTicketController = async (req: Request, res: Response) => {
                 message: `Validation error: ${messages.join(', ')}` 
             });
         }
+
         if (error.code === 11000) {
             const field = Object.keys(error.keyPattern)[0];
             return res.status(409).json({ 
                 message: `Database error: Record with such '${field}' already exists.` 
             });
         }
+
         if (error.name === 'MongooseServerSelectionError' || 
             error.name === 'MongoNetworkError' || 
             error.name === 'MongooseError') { 
@@ -62,10 +60,22 @@ export const updateTicketController = async (req: Request, res: Response) => {
         const updatedTicket = await ticketService.updateTicket(id, req.body);
         res.json(updatedTicket);
     } catch (error: any) {
-        if (error.message.includes("Validation Error")) {
-            res.status(400).json({ message: error.message });
-        } else {
-            res.status(500).json({ message: "Error updating ticket", error: error.message });
+        if (error.message && error.message.includes("Validation Error")) {
+            return res.status(400).json({ message: error.message });
+        } 
+        
+        if (error.message && error.message.includes("Conflict Error")) {
+            return res.status(409).json({ 
+                message: "Edit Conflict: Data was changed by another user. Please refresh the page." 
+            });
         }
+
+        if (error.name === 'VersionError') {
+             return res.status(409).json({ 
+                message: "Edit Conflict: Data was changed by another user. Please refresh the page." 
+            });
+        }
+
+        res.status(500).json({ message: "Error updating ticket", error: error.message });
     }
 };

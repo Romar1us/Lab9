@@ -17,7 +17,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onCreateClick, onEditClick
     const [tickets, setTickets] = useState<ITicket[]>([]);
 
     useEffect(() => {
-        loadTickets();
+        //loadTickets();
     }, []);
 
     const loadTickets = async () => {

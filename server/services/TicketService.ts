@@ -1,6 +1,6 @@
+import mongoose from 'mongoose';
 import { TicketModel } from '../interfaces/Ticket';
 import { AuditLogModel } from '../models/AuditLog';
-import mongoose from 'mongoose';
 
 export class TicketService {
     
@@ -62,6 +62,7 @@ export class TicketService {
             { $limit: 5 }
         ]);
     }
+
     async searchTickets(params: any) {
         const query: any = {};
 
@@ -126,7 +127,7 @@ export class TicketService {
              }
         }
 
-        const ticketNumber = 'T' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000);
+        const ticketNumber = 'TX-' + Date.now().toString().slice(-6) + Math.floor(Math.random() * 1000);
         
         const session = await mongoose.startSession();
         session.startTransaction();
@@ -161,24 +162,17 @@ export class TicketService {
 
     async updateTicket(id: string, updateData: any) {
         const ticket = await TicketModel.findById(id);
+        
         if (!ticket) {
             throw new Error("Ticket not found");
         }
-        if (updateData.ticket_price !== undefined) {
-            const price = Number(updateData.ticket_price);
-            if (price < 10 || price > 20000) {
-                throw new Error("Validation Error: Price must be between 10 and 20000 UAH");
+
+        if (updateData.__v !== undefined) {
+            if (ticket.__v !== updateData.__v) {
+                throw new Error("Conflict Error: Data has been modified by another user. Please refresh.");
             }
         }
-        if (updateData.passenger_details) {
-            const { first_name, last_name } = updateData.passenger_details;
-            if (first_name !== undefined && (first_name.length < 2 || first_name.length > 50)) {
-                throw new Error("Validation Error: First name length must be between 2 and 50 chars");
-            }
-            if (last_name !== undefined && (last_name.length < 2 || last_name.length > 50)) {
-                throw new Error("Validation Error: Last name length must be between 2 and 50 chars");
-            }
-        }
+
         if (updateData.ticket_price) ticket.ticket_price = updateData.ticket_price;
         
         if (updateData.passenger_details) {
@@ -191,16 +185,6 @@ export class TicketService {
             ticket.seat_details = { ...ticket.seat_details, ...updateData.seat_details };
         }
 
-        const updatedTicket = await ticket.save();
-
-        await AuditLogModel.create({
-            action: 'UPDATE',
-            entity: 'Ticket',
-            entity_id: ticket._id,
-            changes: updateData,
-            timestamp: new Date()
-        });
-
-        return updatedTicket;
+        return await ticket.save();
     }
 }

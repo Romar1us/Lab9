@@ -4,6 +4,7 @@ export interface ITicket {
   ticket_number: string;
   ticket_price: number;
   issue_date: string;
+  __v?: number;
   passenger_details: {
     first_name: string;
     last_name: string;
